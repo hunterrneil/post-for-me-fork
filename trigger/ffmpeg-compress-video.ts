@@ -115,8 +115,12 @@ export const ffmpegCompressVideo = task({
       maxSizeBytes,
     });
 
-    const tempDir = os.tmpdir();
-    const inputPath = path.join(tempDir, filename);
+    const tempDir = path.resolve(os.tmpdir());
+    const inputPath = path.resolve(tempDir, filename);
+    const relativePath = path.relative(tempDir, inputPath);
+    if (relativePath.startsWith('..') || path.isAbsolute(relativePath)) {
+      throw new Error("Invalid file path");
+    }
     const maxAttempts = 3;
     let currentInputPath = inputPath;
     const outputPaths: string[] = [];
