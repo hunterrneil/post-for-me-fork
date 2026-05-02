@@ -160,14 +160,36 @@ const detectContentTypeFromBytes = (bytes: Uint8Array): string | null => {
   return null;
 };
 
+// Helper function to build validated URL
+function buildValidatedUrl(baseUrl: string): string {
+  try {
+    // Minimal path validation
+    if (baseUrl.includes('/../') || /\/%2e%2e\//i.test(baseUrl)) {
+      throw new Error('Invalid path');
+    }
+    
+    const url = new URL(baseUrl);
+    
+    // Protocol check
+    if (!['http:', 'https:'].includes(url.protocol)) {
+      throw new Error('Invalid protocol');
+    }
+    
+    return url.href;
+  } catch {
+    throw new Error('Invalid URL');
+  }
+}
+
 // Helper function to stream download and upload file
 const streamDownloadAndUpload = async (fileUrl: string, prefix: string) => {
-  logger.info(`Streaming download from: ${fileUrl}`);
+  const validatedUrl = buildValidatedUrl(fileUrl);
+  logger.info(`Streaming download from: ${validatedUrl}`);
 
   // First, try a HEAD request to check content type without downloading
   let contentType: string | null = null;
   try {
-    const headResponse = await fetch(fileUrl, { method: "HEAD" });
+    const headResponse = await fetch(validatedUrl, { method: "HEAD" });
     if (!headResponse.ok) {
       throw new Error(`Head Response Not Valid: ${headResponse.statusText}`);
     }
@@ -194,7 +216,7 @@ const streamDownloadAndUpload = async (fileUrl: string, prefix: string) => {
 
   if (!contentType) {
     try {
-      const partialResponse = await fetch(fileUrl, {
+      const partialResponse = await fetch(validatedUrl, {
         headers: { Range: "bytes=0-511" },
       });
 
@@ -228,7 +250,7 @@ const streamDownloadAndUpload = async (fileUrl: string, prefix: string) => {
     throw new Error("File type not supported");
   }
 
-  const response = await fetch(fileUrl);
+  const response = await fetch(validatedUrl);
   if (!response.ok) {
     logger.log("Failed to download", { response });
     throw new Error(`Failed to download file: ${response.statusText}`);
