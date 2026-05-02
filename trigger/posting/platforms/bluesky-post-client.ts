@@ -292,7 +292,7 @@ export class BlueskyPostClient extends PostClient {
           "Content-Type": tmp.mimeType || "video/mp4",
           "Content-Length": tmp.size.toString(),
         },
-        body: createReadStream(inputPath) as any,
+        body: createReadStream(path.basename(inputPath)) as any,
       });
 
       uploadResponseData = await uploadResponse.json();

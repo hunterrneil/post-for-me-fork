@@ -259,7 +259,7 @@ const streamDownloadAndUpload = async (fileUrl: string, prefix: string) => {
 
   try {
     await new Promise<void>((resolve, reject) => {
-      const upload = new Upload(fs.createReadStream(tmpPath) as any, {
+      const upload = new Upload(fs.createReadStream(path.resolve(tmpPath)) as any, {
         endpoint: `${process.env.SUPABASE_URL}/storage/v1/upload/resumable`,
         retryDelays: [0, 3000, 5000, 10000, 20000],
         uploadSize,
