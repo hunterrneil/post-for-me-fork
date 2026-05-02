@@ -4,6 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { useSubmit } from "react-router";
 import * as z from "zod";
+import DOMPurify from "dompurify";
 
 import {
   Dialog,
@@ -33,6 +34,15 @@ import {
   SelectValue,
 } from "~/ui/select";
 import { MultiSelect } from "~/ui/multi-select";
+
+function sanitizeHtml(html: string | null | undefined) {
+  return html
+    ? DOMPurify.sanitize(html, {
+        ALLOWED_TAGS: ['span', 'p'],
+        ALLOWED_ATTR: ['class'],
+      })
+    : '';
+}
 
 export type FieldType =
   | "text"
@@ -268,7 +278,7 @@ export function SocialAuthForm({
             </div>
             {field.description ? (
               <FormDescription
-                dangerouslySetInnerHTML={{ __html: field.description }}
+                dangerouslySetInnerHTML={{ __html: sanitizeHtml(field.description) }}
               />
             ) : null}
             <FormMessage />
