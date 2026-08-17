@@ -15,6 +15,7 @@ import { SocialPostPreviewsModule } from './social-posts-previews/social-posts-p
 import { WebhooksModule } from './webhooks/webhooks.module';
 import { SocialAccountFeedsModule } from './social-account-feeds/social-account-feeds.module';
 import { PrivateModule } from './private/private.module';
+import { SupportModule } from './support/support.module';
 
 @Module({
   imports: [
@@ -31,6 +32,7 @@ import { PrivateModule } from './private/private.module';
     WebhooksModule,
     SocialAccountFeedsModule,
     PrivateModule,
+    SupportModule,
   ],
   controllers: [],
   providers: [AuthGuard, VerifyKeyGuard],
